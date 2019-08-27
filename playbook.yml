@@ -103,7 +103,8 @@
 
     - name: Pull default Docker image
       docker_image:
-        nocache: yes
+        source: pull
+        build.nocache: yes
         name: "{{ container_image }}"
         tag: "{{ container_image_tag }}"
 
