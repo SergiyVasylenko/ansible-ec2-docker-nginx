@@ -82,7 +82,7 @@
 
     - name: Install required system packages
       apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python-pip', 'virtualenv', 'python3-setuptools']
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python-pip', 'virtualenv', 'python3-setuptools', 'python-apt']
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -104,17 +104,16 @@
     - name: Pull default Docker image
       docker_image:
         source: pull
-        build.nocache: yes
         name: "{{ container_image }}"
         tag: "{{ container_image_tag }}"
 
     - name: Copy content directory for webserver
       copy:
-         src: ./www
-         dest: /var
-         mode: '0755'
-         owner: www-data
-         group: www-data
+        src: ./www
+        dest: /var
+        mode: '0755'
+        owner: www-data
+        group: www-data
 
     - name: Start Nginx container
       docker_container:
