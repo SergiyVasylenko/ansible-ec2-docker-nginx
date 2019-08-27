@@ -28,10 +28,10 @@
           from_port: 80
           to_port: 80
           cidr_ip: 0.0.0.0/0
-        - proto: tcp
-          from_port: 22
-          to_port: 22
-          cidr_ip: 0.0.0.0/0
+#        - proto: tcp
+#          from_port: 22
+#          to_port: 22
+#          cidr_ip: 0.0.0.0/0
       rules_egress:
         - proto: all
           cidr_ip: 0.0.0.0/0
@@ -47,6 +47,7 @@
       region: "{{ region }}"
       keypair: "{{ keypair }}"
       count: "{{count}}"
+      zone: us-east-1a
       instance_tags: "{{instance_tags}}"
      register: ec2
 
