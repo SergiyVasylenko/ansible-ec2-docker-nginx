@@ -54,7 +54,7 @@
    - name: Add created host ip address to env.inventory
      add_host:
        name: "{{ item.public_ip }}"
-       groups: Nginx-servers
+       groups: nginx_servers
      with_items: "{{ ec2.instances }}"
 
    - name: Waiting for port 22 to become open and contain "OpenSSH"
@@ -65,7 +65,7 @@
      with_items: "{{ ec2.instances }}"
 
 - name: Install docker, pull nginx image, run nginx container with sample content
-  hosts: Nginx-servers
+  hosts: nginx_servers
   remote_user: ubuntu
   become: yes
   vars:
