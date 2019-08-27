@@ -28,10 +28,10 @@
           from_port: 80
           to_port: 80
           cidr_ip: 0.0.0.0/0
-#        - proto: tcp
-#          from_port: 22
-#          to_port: 22
-#          cidr_ip: 0.0.0.0/0
+        - proto: tcp
+          from_port: 22
+          to_port: 22
+          cidr_ip: 0.0.0.0/0
       rules_egress:
         - proto: all
           cidr_ip: 0.0.0.0/0
@@ -54,7 +54,7 @@
    - name: Add created host ip address to env.inventory
      add_host:
        name: "{{ item.public_ip }}"
-       groups: Nginx-servers
+       groups: nginx_servers
      with_items: "{{ ec2.instances }}"
 
    - name: Waiting for port 22 to become open and contain "OpenSSH"
@@ -65,24 +65,25 @@
      with_items: "{{ ec2.instances }}"
 
 - name: Install docker, pull nginx image, run nginx container with sample content
-  hosts: Nginx-servers
+  hosts: nginx_servers
   remote_user: ubuntu
   become: yes
   vars:
+    ansible_python_interpreter: /usr/bin/python3
     container_name: nginx
     container_image: nginx
     container_image_tag: latest
   gather_facts: no
   pre_tasks:
     - name: 'install python'
-      raw: 'sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y install python'
+      raw: 'sudo apt-get -y update && sudo apt-get -y upgrade && sudo apt-get -y install python3 python3-apt'
   tasks:
     - name: Install aptitude using apt
       apt: name=aptitude state=latest update_cache=yes force_apt_get=yes
 
     - name: Install required system packages
       apt: name={{ item }} state=latest update_cache=yes
-      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python-pip', 'virtualenv', 'python3-setuptools']
+      loop: [ 'apt-transport-https', 'ca-certificates', 'curl', 'software-properties-common', 'python3-pip', 'virtualenv', 'python3-setuptools' ]
 
     - name: Add Docker GPG apt Key
       apt_key:
@@ -103,17 +104,17 @@
 
     - name: Pull default Docker image
       docker_image:
-        nocache: yes
+        source: pull
         name: "{{ container_image }}"
         tag: "{{ container_image_tag }}"
 
     - name: Copy content directory for webserver
       copy:
-         src: ./www
-         dest: /var
-         mode: '0755'
-         owner: www-data
-         group: www-data
+        src: ./www
+        dest: /var
+        mode: '0755'
+        owner: www-data
+        group: www-data
 
     - name: Start Nginx container
       docker_container:
